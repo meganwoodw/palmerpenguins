@@ -1,0 +1,127 @@
+---
+title: "Penguins"
+author: "slimy-green"
+date: "11/15/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+```{r message=FALSE}
+penguins_raw<- read_csv(here::here("inst/extdata/penguins_raw.csv"))
+```
+
+## Exploratory Analysis
+
+### Visualizations
+
+
+```{r}
+
+
+body_mass_graph <- penguins_raw %>% 
+  mutate(Species = str_replace_all(Species, " .*", "")) %>% 
+  ggplot(aes(x=Species, y = `Body Mass (g)`, fill = Species)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle =90, hjust=1)) +
+  labs(title = "Body Mass of Penguins", subtitle = "By Species")
+
+ggsave(filename = "body_mass_plot.png", plot = body_mass_graph)
+
+```
+
+```{r}
+body_mass_sex_graph <- penguins_raw %>% 
+  mutate(Species = str_replace_all(Species, " .*", "")) %>% 
+  na.omit(Sex) %>% 
+  group_by(Sex) %>% 
+  ggplot(aes(x=Species, y = `Body Mass (g)`, fill = Sex)) +
+  geom_violin(area= "fill") +
+  theme(axis.text.x = element_text(angle =90, hjust=1)) +
+  labs(title = "Body Mass of Penguins", subtitle = "By Species and Sex")
+
+ggsave(filename = "body_mass_sex_graph.png", plot = body_mass_sex_graph)
+```
+
+
+```{r pressure}
+body_mass_species <- penguins_raw %>% 
+  mutate(Species = str_replace_all(Species, " .*", "")) %>% 
+  ggplot(aes(x=Species, y = `Flipper Length (mm)`, fill = Species)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle =90, hjust=1)) +
+  labs(title = "Body Mass of Penguins", subtitle = "By Species")
+
+ggsave(filename = "body_mass_species.png", plot = body_mass_species)
+```
+
+
+```{r}
+beak_length_depth <- penguins_raw %>% 
+  mutate(Species = str_replace_all(Species, " .*", "")) %>% 
+  ggplot() +
+  geom_point(aes(x= `Culmen Length (mm)` , y = `Culmen Depth (mm)`, color = Species)) +
+  labs(title = "Culmen Length vs Culmen Depth", subtitle = "by Species")
+
+ggsave(filename = "beak_length_depth.png", plot = beak_length_depth)
+  
+```
+
+
+### Summary Statistics
+
+```{r}
+penguins_table <- penguins_raw %>% 
+  mutate(Species = str_replace_all(Species, " .*", "")) %>% 
+  na.omit(Sex) %>% 
+  group_by(Species, Sex) %>% 
+  summarise(total = n(),
+            med_culmen_length = median(`Culmen Length (mm)`), 
+            med_culmen_depth = median(`Culmen Depth (mm)`),
+            med_mass = median(`Body Mass (g)`), 
+            med_flipper_length = median(`Flipper Length (mm)`))
+
+knitr::kable(penguins_table)
+
+```
+
+
+```{r}
+penguins_island <- penguins_raw %>%
+  mutate(Species = str_replace_all(Species, " .*", "")) %>%
+  group_by(Island, Species) %>% 
+  summarise(total = n())
+
+knitr::kable(penguins_island)
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
